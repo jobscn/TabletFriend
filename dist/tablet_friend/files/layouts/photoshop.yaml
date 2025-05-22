@@ -1,0 +1,203 @@
+﻿# This is the layout that is used with Photoshop.
+
+layout_width: 4
+button_size: 9
+margin: 8
+
+app: Photoshop
+
+buttons:
+	copy:
+		action: ctrl+c
+		size: 4,4
+		style: outlined
+		# icon: content_copy
+		text: Copy
+	cut:
+		action: ctrl+x
+		size: 4,4
+		style: outlined
+		# icon: content_cut
+		text: Cut
+	paste:
+		action: ctrl+v
+		size: 4,4
+		style: outlined
+		# icon: content_paste
+		text: Paste
+	save:
+		action: ctrl+s
+		size: 4,4
+		# icon: content-save
+		style: outlined
+		text: Save
+
+	docked_spacer2:
+		spacer: true
+		visibility: docked
+		size: 8,1
+
+	shift:
+		action: toggle shift
+		size: 8,4
+		text: Shift
+		# icon: apple_keyboard_shift
+	ctrl:
+		action: toggle ctrl
+		size: 4,4
+		text: Ctrl
+		# icon: apple_keyboard_control
+	alt:
+		action: toggle alt
+		size: 4,4
+		text: Alt
+		# icon: apple_keyboard_option
+
+	docked_spacer3:
+		spacer: true
+		visibility: docked
+		size: 8,1
+
+	enter:
+		action: enter
+		size: 4,4
+		style: outlined
+		icon: subdirectory_arrow_left
+	escape:
+		font_weight: 500
+		action: escape
+		size: 4,4
+		style: outlined
+		text: Esc
+	delete:
+		action: delete
+		size: 8,4
+		style: outlined
+		text: Delete
+
+	docked_spacer4:
+		spacer: true
+		visibility: docked
+		size: 8,1
+
+	new_layer:
+		action: ctrl+shift+n
+		size: 4,4
+		icon: layers-plus
+		style: accent
+		text: create new layer
+
+	duplicate:
+		action: ctrl+j
+		size: 4,4
+		icon: content-duplicate
+		style: accent
+		text: duplicate layer
+
+	merge:
+		action: ctrl+e
+		size: 8,4
+		icon: layers
+		style: accent
+		text: merge with layer below
+
+	spacer1:
+		spacer: true
+		size: 8,1
+
+	M:
+		action: m
+		size: 4,4
+		style: outlined
+		icon: select
+		text: select (M)
+
+	deselect:
+		action: ctrl+d
+		size: 4,4
+		style: circular
+		icon: checkbox-blank-off-outline
+		text: deselect all
+
+	I:
+		action: i
+		size: 4,4
+		style: outlined
+		icon: eyedropper-variant
+		text: I
+
+	V:
+		action: v
+		size: 4,4
+		style: outlined
+		icon: cursor-default
+		text: click (V)
+
+	B:
+		action: b
+		size: 4,8
+		style: outlined
+		icon: brush
+		text: brush (B)
+
+	invert-colors:
+		action: x
+		size: 4,4
+		icon: invert-colors
+		style: circular_accent
+		text: switch colors
+
+	G:
+		action: g
+		size: 4,4
+		icon: format-color-fill
+		style: outlined
+		text: fill (G)
+
+	E:
+		action: e
+		size: 4,4
+		style: outlined
+		icon: eraser
+		text: erase (E)
+
+	T:
+		action: t
+		size: 4,4
+		icon: format-title
+		style: outlined
+		text: add text (T)
+
+	spacer2:
+		visibility: docked
+		spacer: true
+		size: 8,1
+
+	Mask:
+		action: ctrl+1
+		size: 4,4
+		style: accent
+		text: Mask
+	Blend:
+		action: ctrl+0
+		size: 4,4
+		style: accent
+		text: Blend
+
+	undo:
+		action: ctrl+z
+		size: 4,4
+		style: accent
+		icon: undo
+		text: undo
+	redo:
+		action: ctrl+y
+		size: 4,4
+		style: accent
+		icon: redo
+		text: redo
+
+	docked_spacer1:
+		spacer: true
+		visibility: docked
+		size: 8,3

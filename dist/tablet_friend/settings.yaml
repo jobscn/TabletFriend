@@ -1,0 +1,10 @@
+add_to_autostart: false
+window_x: 0
+window_y: 0
+layout: photoshop
+theme: pink
+docking_mode: Left
+first_launch: false
+update_checking_enabled: true
+toolbar_autohide_enabled: false
+per_app_layouts_enabled: true

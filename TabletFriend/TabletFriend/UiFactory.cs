@@ -12,6 +12,11 @@ using TabletFriend.Actions;
 using TabletFriend.Models;
 using WpfAppBar;
 
+
+using System.Runtime.InteropServices;
+using System.IO;
+using System.Text;
+
 namespace TabletFriend
 {
 	public static class UiFactory
@@ -58,7 +63,7 @@ namespace TabletFriend
 			var newWidth = window.Width;
 			var newHeight = window.Height;
 
-			
+
 			if (rotateLayout)
 			{
 				newHeight = size.X * layout.CellSize + layout.Margin + titlebarHeight;
@@ -215,7 +220,11 @@ namespace TabletFriend
 					uiButton = new Button();
 				}
 			}
+
+			// Stylus.SetIsPressAndHoldEnabled(uiButton, false);
+
 			uiButton.Width = layout.CellSize * size.X - layout.Margin;
+
 			uiButton.Height = layout.CellSize * size.Y - layout.Margin;
 
 			var font = button.Font;
@@ -297,12 +306,156 @@ namespace TabletFriend
 
 			if (button.Action != null)
 			{
-				uiButton.Click += (e, o) => _ = button.Action.Invoke();
+
+				uiButton.PreviewMouseLeftButtonDown += (e, o) =>
+				{
+					PlayUiClickSound();
+				};
+				uiButton.Click += (e, o) =>
+				{
+					_ = button.Action.Invoke();
+				};
 			}
 
 			Canvas.SetTop(uiButton, layout.CellSize * position.Y + layout.Margin + offset.Y);
 			Canvas.SetLeft(uiButton, layout.CellSize * position.X + layout.Margin + offset.X);
 			window.MainCanvas.Children.Add(uiButton);
 		}
+
+
+		// ---- Sound Playback Additions with Caching Logic ----
+		[DllImport("winmm.dll")]
+		private static extern long mciSendString(string lpstrCommand, StringBuilder lpstrReturnString, int uReturnLength, IntPtr hwndCallback);
+
+		private static readonly string SoundAlias = "TF_UiClickSound"; // 固定别名
+		private static bool _isSoundInitialized = false;
+		private static string _soundFilePath = null;
+		private static object _soundLock = new object(); // 用于线程安全初始化
+
+		// Helper to log errors
+		private static void LogSoundError(string message)
+		{
+			System.Diagnostics.Debug.WriteLine($"SOUND ERROR: {message}");
+		}
+
+		/// <summary>
+		/// Initializes the sound system by opening the MP3 file with a persistent alias.
+		/// This should be called before the first play.
+		/// </summary>
+		private static void InitializeSoundSystem()
+		{
+			// Double-check locking for thread safety if this can be called from multiple threads concurrently
+			if (_isSoundInitialized) return;
+
+			lock (_soundLock)
+			{
+				if (_isSoundInitialized) return; // Check again inside lock
+
+				try
+				{
+					string basePath = AppDomain.CurrentDomain.BaseDirectory;
+					_soundFilePath = Path.Combine(basePath, "files", "vfx", "ui-click.mp3");
+
+					if (!File.Exists(_soundFilePath))
+					{
+						LogSoundError($"Sound file not found for initialization: {_soundFilePath}");
+						return;
+					}
+
+					// Ensure any previous instance with the same alias is closed (defensive)
+					mciSendString($"close {SoundAlias}", null, 0, IntPtr.Zero);
+
+					string commandOpen = $"open \"{_soundFilePath}\" type mpegvideo alias {SoundAlias}";
+					long err = mciSendString(commandOpen, null, 0, IntPtr.Zero);
+
+					if (err != 0)
+					{
+						LogSoundError($"MCI Error opening file '{_soundFilePath}' for persistent alias '{SoundAlias}'. Code: {err}");
+						_soundFilePath = null; // Mark as not successfully opened
+						return;
+					}
+					_isSoundInitialized = true;
+					LogSoundError($"Sound system initialized successfully for alias '{SoundAlias}'.");
+
+					// Register a cleanup method for when the application domain unloads (e.g., app exit)
+					AppDomain.CurrentDomain.ProcessExit += OnProcessExit;
+					AppDomain.CurrentDomain.DomainUnload += OnProcessExit; // Also for domain unload scenarios
+				}
+				catch (Exception ex)
+				{
+					LogSoundError($"Exception in InitializeSoundSystem: {ex.Message}");
+					_isSoundInitialized = false;
+					_soundFilePath = null;
+				}
+			}
+		}
+
+		/// <summary>
+		/// Cleans up the sound system by closing the MCI alias.
+		/// </summary>
+		private static void CleanupSoundSystem()
+		{
+			lock (_soundLock)
+			{
+				if (_isSoundInitialized && !string.IsNullOrEmpty(_soundFilePath))
+				{
+					long err = mciSendString($"close {SoundAlias}", null, 0, IntPtr.Zero);
+					if (err != 0)
+					{
+						LogSoundError($"MCI Error closing alias '{SoundAlias}'. Code: {err}");
+					}
+					else
+					{
+						LogSoundError($"Sound system cleaned up for alias '{SoundAlias}'.");
+					}
+					_isSoundInitialized = false;
+					_soundFilePath = null;
+				}
+			}
+		}
+
+		private static void OnProcessExit(object sender, EventArgs e)
+		{
+			CleanupSoundSystem();
+			// Unregister to prevent multiple calls if DomainUnload and ProcessExit both fire for the same shutdown.
+			AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
+			AppDomain.CurrentDomain.DomainUnload -= OnProcessExit;
+		}
+
+
+		/// <summary>
+		/// Plays the predefined UI click sound asynchronously using the initialized MCI alias.
+		/// </summary>
+		private static void PlayUiClickSound()
+		{
+			if (!_isSoundInitialized)
+			{
+				InitializeSoundSystem();
+				if (!_isSoundInitialized)
+				{
+					return;
+				}
+			}
+
+			if (string.IsNullOrEmpty(_soundFilePath))
+			{
+				LogSoundError("Sound file path is missing or sound system not properly initialized. Cannot play sound.");
+				return;
+			}
+
+			// Play the sound from the beginning using the persistent alias.
+			// Removing "wait" makes the command return immediately, playing the sound in the background.
+			string commandPlay = $"play {SoundAlias} from 0"; // REMOVED "wait"
+			long err = mciSendString(commandPlay, null, 0, IntPtr.Zero);
+
+			if (err != 0)
+			{
+				LogSoundError($"MCI Error playing alias '{SoundAlias}'. Code: {err}. Sound file: {_soundFilePath}");
+				// Consider if re-initialization is needed for certain errors,
+				// but be careful not to create an infinite loop if initialization itself is the problem.
+				// Example: if (IsRecoverableError(err)) { CleanupSoundSystem(); /* And maybe re-initialize on next play attempt */ }
+			}
+		}
+		// ---- End Sound Playback Additions ----
 	}
 }

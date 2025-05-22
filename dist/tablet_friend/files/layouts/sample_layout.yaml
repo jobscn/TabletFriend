@@ -1,0 +1,238 @@
+﻿# This is a layout file. It defines what buttons do, how they look and how they are arranged. 
+# This may look a bit overwhelming at first, but you can remove any properties that you don't 
+# need and everything will work just fine. For example, you can remove all theme properties 
+# and simply use external themes.
+# You can also hot-reload the layouts and immediately preview your changes. 
+# Simply edit and save the layout, and the app will immediately display your changes.
+
+# Indentations DO matter, they determine the property hierarchy.
+
+# Max layout width measured in cells. The buttons do not have position properties - instead, they get stacked automatically
+# from left to right and from top to bottom. Layout width specifies how far left the buttons can be stacked. 
+layout_width: 4
+
+# 1x1 button size measured in pixels.
+button_size: 14
+# Space between the buttons measured in pixels.
+margin: 8
+
+# Toolbar opacity. 0 - fully transparent, 1 - fully opaque.
+min_opacity: 0.2 # Used for when the window is unfocused.
+max_opacity: 0.9 # Used for when the window is focued.
+
+# You can set a layout to automatically open if a specific app is in focus.
+# You can use wildcards in app names if you want to match something more generic.
+# Note that app names are not case-sensitive.
+# For example:
+#app: app_name     # Will match only app_name exactly.
+#app: app_name*    # Will match any app name that starts with app_name. For example, app_name_v_1.0
+#app: "*app_name*" # Will match any app name that contains app_name. Note that if you're putting a * symbol in the beginning, you need to use quotes. 
+
+# Button list of the layout. Note that all buttons should have different 
+# names - otherwise you'll end up with missing buttons.
+buttons:
+	# This is the most basic button.
+	undo:
+		# Action without any keyword will be interpreted as a key press. 
+		# See docs/keys.md for the full list of allowed key names.
+		action: ctrl+z
+		# This button is 2 cells wide and 1 cell tall. 
+		size: 4,2
+		# This text will be displayed on the button.
+		text: undo
+
+	copy:
+		action: ctrl+c
+
+		# Allowed styles:
+		# - default
+		# - accent
+		# - circular_accent
+		# - circular
+		# - outlined
+		# - shy
+		# - none
+		style: accent # This button will look different.
+		
+		# Instead of text, this button will have an icon.
+		# Tablet Friend has several thousand (yep, not a typo) icons built-in.
+		# You can browse the list over here: https://materialdesignicons.com/
+		# Just look up the names of the icons you like and type them here.
+		icon: content_copy
+		# Since we already have an icon, text will be displayed as a tooltip.
+		# If you don't want tooltips, simply remove the text property.
+		text: copy
+		size: 2,2
+
+	paste:
+		action: ctrl+v
+		style: shy
+		icon: content_paste
+		text: paste
+		size: 2,2
+
+	# This is a spacer. The only property it can have is size.
+	# Since you cannot specify positions directly, spacers exist
+	# to create empty space between the buttons. This spacer will 
+	# occupy 2 cells.
+	spacer1:
+		spacer: true
+		size: 4,2
+
+	shift:
+		action: toggle shift # Instead of pressing once, this button will be on toggle.
+		style: outlined
+		icon: apple_keyboard_shift
+		text: shift
+		size: 4,2
+
+	type:
+		actions: # Typing "actions" instead of "action" will make the button chain multiple actions. Any action can be used.
+		- type foxes # First, "foxes" will be typed.
+		- wait 1000 # Then, we'll wait for one second.
+		- space # Then, spacebar will be pressed. 
+		- type rule # Then, "rule" will be typed.
+		- hold shift # And finally, shift will be pressed for two seconds.
+		- wait 2000
+		- release shift
+		style: circular_accent
+		text: type
+		size: 2,2
+
+
+	calc:
+		action: cmd calc.exe # cmd executes a command line command. For example, calc.exe will launch calculator app.
+		icon: calculator
+		style: circular
+		size: 2,2
+
+
+	# Here's a bit of lesser known magic.
+	# There are actually 24 F keys, and if you combine them with win key, inteseting stuff happens.
+	pen_click:
+		actions: 
+			# win+f20 maps to your Surface Pen eraser button click.
+			- win+f20
+		style: accent
+		icon: pencil_box
+		text: bluetooth button\nsingle click
+		size: 2,2
+
+	pen_double_click:
+		actions: 
+			# win+f10 maps to your Surface Pen eraser button double click.
+			- win+f19
+		style: accent
+		icon: pencil_box_multiple
+		text: bluetooth button\ndouble click
+		size: 2,2
+
+	pen_hold:
+		actions: 
+			# win+f18 maps to your Surface Pen eraser button hold.
+			- win+f18
+		style: accent
+		icon: pencil
+		text: bluetooth button\nhold
+		size: 4,2
+
+	left:
+		# repeat action will make the button trigger continiously when pressed and held down.
+		action: repeat left
+		icon: chevron_left
+		size: 2,2
+	right:
+		action: repeat right
+		icon: chevron_right
+		size: 2,2
+
+	hide:
+		# Hides the toolbar just like the tray icon press.
+		action: hide
+		size: 4,2
+		text: "hide"
+		visibility: docked
+
+	# dock and undock actions will allow you to dock with a button instead of going through menus.
+	undock_toolbar:
+		icon: dock_top
+		action: undock
+		text: undock
+		style: default
+		# Makes the button visible only in docked mode. 
+		# Valid values:
+		# - always
+		# - undocked
+		# - docked
+		# - docked_left
+		# - docked_right
+		# - docked_top
+
+		visibility: docked
+		size: 4,2
+
+	dock_toolbar_left:
+		icon: dock_left
+		action: dock left
+		text: dock left
+		style: default
+		visibility: undocked
+		size: 2,2
+
+	dock_toolbar_right:
+		icon: dock_right
+		action: dock right
+		text: dock right
+		style: default
+		visibility: undocked
+		size: 2,2
+
+	swap:
+		# This button will load a different layout.
+		action: layout default
+		text: Default\nlayout # \n puts text on a new line.
+		size: 4,2
+		style: default
+
+	kot1:
+		# You сan use png icons if you're not happy with built-in ones.
+		icon: files/icons/kot.png
+		style: accent
+		size: 2,2
+		icon_stretch: fit
+	kot3:
+		icon: files/icons/kot.png
+		style: accent
+		size: 2,2
+		icon_stretch: none
+	kot2:
+		icon: files/icons/kot.png
+		style: accent
+		size: 4,2
+		icon_stretch: fill
+
+	font:
+		text: K
+		# The full list of fonts is available here: http://www.microsoft.com/typography/fonts/
+		font: wingdings
+		font_size: 
+		size: 2,4
+
+	bold:
+		font_size: 14
+		font_weight: 999 
+		text: bold
+		size: 2,2
+
+	thin:
+		font_size: 14
+		font_weight: 1
+		text: thin
+		size: 2,2
+
+
+	honk:
+		action: cmd rundll32 user32.dll,MessageBeep
+		font: comic sans ms
+		text: honk :)
+		size: 4,2
